@@ -1,5 +1,22 @@
 [
-  { "name": "1-start.jpg", "query": "?shot=start&seed=1" },
-  { "name": "2-play.jpg", "query": "?shot=play&seed=1" },
-  { "name": "3-end.jpg", "query": "?shot=end&seed=1" }
+  {
+    "name": "1-cover.jpg",
+    "caption": "Cover: the red coupe tears up Coastal Avenue at golden hour, three stars lit and an interceptor closing, with traffic, mission banner, minimap, health and speedometer on screen.",
+    "query": "?shot=cover&seed=20261123"
+  },
+  {
+    "name": "2-onfoot.jpg",
+    "caption": "On foot in Old Palm: a fixer offers the next job while pedestrians, a waiting cab, a hidden package and the full street HUD frame the block.",
+    "query": "?shot=on-foot&seed=20261123"
+  },
+  {
+    "name": "3-chase.jpg",
+    "caption": "Five-star chase: police interceptors box in the speeding coupe on the coastal strip while tracers fly and the speedometer hits redline.",
+    "query": "?shot=chase&seed=20261123"
+  },
+  {
+    "name": "4-mission.jpg",
+    "caption": "Mission in progress: Chief Reyes briefs the Tidewater takedown on the beach, rival targets marked, gunfire in the air and two wanted stars.",
+    "query": "?shot=mission&seed=20261123"
+  }
 ]

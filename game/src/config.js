@@ -1,61 +1,69 @@
-// Every tuning number and colour in one place. The playfield is a fixed 1280x720 logical area;
-// the renderer scales it to the window, so no rule below depends on the screen size.
-
-export const FIELD = { width: 1280, height: 720, groundY: 664 };
-
-/** The simulation's fixed step, in seconds: 60 updates a second whatever the display's rate. */
+// Every tuning number and colour for Palm Cay. Logical screen is 1280x720; the world is a
+// fixed coastal grid and the camera keeps that scale whatever the window size.
+export const VIEW = { width: 1280, height: 720 };
 export const STEP = 1 / 60;
 
-export const PLAYER = {
-  width: 72,
-  height: 24,
-  speed: 560,
-  invulnerable: 1.5,
+export const WORLD = {
+  width: 6400,
+  height: 4200,
+  grid: 320,
+  roadHalf: 48,
+  beachX: 5760,
+  waterX: 6080,
+  piers: [820, 2020, 3220],
 };
-
-export const LIVES = 3;
-
-export const BLOCK = {
-  minWidth: 40,
-  maxWidth: 110,
-  height: 36,
-  speed: 240,
-  speedPerLevel: 30,
-  speedJitter: 90,
-  interval: 0.55,
-  intervalScale: 0.88,
-  minInterval: 0.14,
-  dodgePoints: 1,
-};
-
-export const COIN = {
-  size: 24,
-  speed: 190,
-  speedPerLevel: 14,
-  interval: 1.4,
-  intervalJitter: 0.8,
-  points: 10,
-};
-
-/** Seconds of play per level, and the last level: speeds and spawn rates stop growing there. */
-export const LEVEL = { seconds: 12, max: 12 };
-
-/** How many falling things can exist at once; the pool is allocated once, at boot. */
-export const POOL_SIZE = 64;
 
 export const PALETTE = {
-  backdrop: '#11141b',
-  sky: '#1b1f2a',
-  ground: '#2a3040',
-  player: '#4fc3f7',
-  block: '#e5534b',
-  coin: '#f2c94c',
-  panel: '#252b38',
-  text: '#eef1f5',
-  muted: '#8b93a3',
+  pavement: '#e7d6b4',
+  block: '#efe0c2',
+  sidewalk: '#f7ead0',
+  road: '#3f3b4a',
+  roadGold: '#5a4d52',
+  lane: '#f4d8a0',
+  ocean: '#1e7180',
+  oceanDeep: '#145763',
+  foam: '#d8f4ec',
+  sand: '#f2dca8',
+  grass: '#88ab78',
+  shadow: '#4b3346',
+  ink: '#241f31',
+  cream: '#fff4db',
+  gold: '#ffc255',
+  red: '#e04b47',
+  blue: '#6fd6e8',
+  pink: '#f29aa1',
 };
 
-export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+// Five districts, drawn as faint ground labels and used by the fixers and the minimap.
+export const DISTRICTS = [
+  { name: 'MARINA ROW', x: 960, y: 620, color: '#b66a5a' },
+  { name: 'OLD PALM', x: 1000, y: 2860, color: '#b07a63' },
+  { name: 'SUNSET FLATS', x: 2880, y: 1680, color: '#9b6b78' },
+  { name: 'GLASS QUARTER', x: 2880, y: 3300, color: '#5f7f91' },
+  { name: 'TIDEWATER', x: 4920, y: 2280, color: '#bb8060' },
+];
 
-/** Where the best score is kept between visits (this browser only). */
-export const BEST_KEY = 'block-dodger.best';
+export const ROOF_COLORS = ['#e08c6a', '#e9bf7c', '#85b2a4', '#d9a0a0', '#a5a8c4', '#f0cf9a', '#c88f7e', '#8fb3bd'];
+export const SHOP_NAMES = [
+  'TIDE & TACKLE', 'SUN-UP MARKET', 'PALM LAUNDRY', 'CAFE SOL', 'BAY 9 MOTORS',
+  'SALT & SAND', 'CORAL CAFE', 'HARBOR PRESS', 'LONGBOARD CO.', 'GOLDEN HOUR',
+  'THE SHALLOW END', 'CAPTAIN STORE', 'DRIFT AUTO', 'FIVE & DIME', 'PIER SIDE',
+];
+export const BILLBOARDS = [
+  'SUN-UP COLA', 'PALM CAY OR BUST', 'KEEP IT COASTAL', 'FRESH CATCH DAILY',
+  'SLOW DOWN · SUNSET', 'GOOD TIMES 24/7', 'TIDEWATER TAVERN',
+];
+
+// Original vehicles: name, body colour, top speed (px/s), acceleration and steering rate.
+export const CAR_TYPES = [
+  { id: 'coupe', name: 'Vermilion GT', color: '#d8433f', top: 620, accel: 340, turn: 2.5 },
+  { id: 'sedan', name: 'Palmetto', color: '#d9c48a', top: 500, accel: 260, turn: 2.2 },
+  { id: 'truck', name: 'Sand Hauler', color: '#6f9aa3', top: 420, accel: 210, turn: 1.8 },
+  { id: 'taxi', name: 'Cab Cay', color: '#f2c14e', top: 520, accel: 280, turn: 2.3 },
+  { id: 'cruiser', name: 'Interceptor', color: '#e8eef2', top: 660, accel: 360, turn: 2.7 },
+];
+
+export const SAVE_KEY = 'heatline.palmcay.save.v1';
+export const PACKAGE_COUNT = 12;
+export const WALK_SPEED = 226;
+export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';

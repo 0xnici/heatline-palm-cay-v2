@@ -1,53 +1,64 @@
-// Keyboard and pointer input. Held keys give a steering direction; one-shot presses (start or
-// restart, pause) are queued as bit flags and taken once by the loop, so a press between two
-// frames is never lost and never counted twice.
-
+// Keyboard and mouse. Movement is polled, one-shot keys are queued as actions, and the mouse
+// position is converted into the same logical 1280x720 space the renderer uses.
 export const ACTION_CONFIRM = 1;
 export const ACTION_PAUSE = 2;
+export const ACTION_MUTE = 4;
+export const ACTION_ENTER = 8;
+export const ACTION_FARE = 16;
+export const ACTION_RESPAWN = 32;
 
-const LEFT = new Set(['ArrowLeft', 'KeyA']);
-const RIGHT = new Set(['ArrowRight', 'KeyD']);
-const CONFIRM = new Set(['Space', 'Enter']);
-const PAUSE = new Set(['KeyP', 'Escape']);
+const CONTROL_KEYS = new Set([
+  'KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  'Space', 'KeyE', 'KeyF', 'KeyP', 'KeyM', 'KeyR', 'Enter', 'Escape', 'ShiftLeft',
+]);
 
-export function createInput(target) {
-  let left = false;
-  let right = false;
-  let actions = 0;
+export function createInput(canvas) {
+  const down = new Set();
+  const pressed = new Set();
+  const mouse = { x: 640, y: 360, down: false };
+  let clicked = false;
 
   window.addEventListener('keydown', (event) => {
-    if (LEFT.has(event.code)) left = true;
-    else if (RIGHT.has(event.code)) right = true;
-    else if (CONFIRM.has(event.code)) {
-      if (!event.repeat) actions |= ACTION_CONFIRM;
-    } else if (PAUSE.has(event.code)) {
-      if (!event.repeat) actions |= ACTION_PAUSE;
-    } else return;
-    event.preventDefault();
+    if (CONTROL_KEYS.has(event.code)) event.preventDefault();
+    down.add(event.code);
+    if (!event.repeat) pressed.add(event.code);
   });
-  window.addEventListener('keyup', (event) => {
-    if (LEFT.has(event.code)) left = false;
-    else if (RIGHT.has(event.code)) right = false;
+  window.addEventListener('keyup', (event) => down.delete(event.code));
+  window.addEventListener('blur', () => { down.clear(); mouse.down = false; });
+  canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const scale = Math.min(rect.width / 1280, rect.height / 720);
+    mouse.x = (event.clientX - rect.left - (rect.width - 1280 * scale) / 2) / scale;
+    mouse.y = (event.clientY - rect.top - (rect.height - 720 * scale) / 2) / scale;
   });
-  // A key released while the tab is hidden never sends keyup: let go of everything on blur.
-  window.addEventListener('blur', () => {
-    left = false;
-    right = false;
+  canvas.addEventListener('mousedown', (event) => {
+    if (event.button === 0) { mouse.down = true; clicked = true; }
   });
-  target.addEventListener('pointerdown', () => {
-    actions |= ACTION_CONFIRM;
-  });
+  window.addEventListener('mouseup', () => { mouse.down = false; });
+  canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+
+  const axis = (negative, positive, altNegative, altPositive) =>
+    (down.has(positive) || down.has(altPositive) ? 1 : 0) - (down.has(negative) || down.has(altNegative) ? 1 : 0);
 
   return {
-    /** -1 for left, 1 for right, 0 for neither or both. */
-    direction() {
-      return (right ? 1 : 0) - (left ? 1 : 0);
-    },
-    /** The one-shot presses since the last call, as ACTION_* flags. */
+    moveX: () => axis('KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight'),
+    moveY: () => axis('KeyW', 'KeyS', 'ArrowUp', 'ArrowDown'),
+    handbrake: () => down.has('Space'),
+    isDown: (code) => down.has(code),
+    mouse,
+    firing: () => mouse.down || clicked,
     takeActions() {
-      const taken = actions;
-      actions = 0;
-      return taken;
+      let actions = 0;
+      if (pressed.has('Enter') || clicked) actions |= ACTION_CONFIRM;
+      if (pressed.has('KeyP') || pressed.has('Escape')) actions |= ACTION_PAUSE;
+      if (pressed.has('KeyM')) actions |= ACTION_MUTE;
+      if (pressed.has('KeyE')) actions |= ACTION_ENTER;
+      if (pressed.has('KeyF')) actions |= ACTION_FARE;
+      if (pressed.has('KeyR')) actions |= ACTION_RESPAWN;
+      pressed.clear();
+      clicked = false;
+      return actions;
     },
+    clearClicks() { clicked = false; },
   };
 }
